@@ -80,6 +80,7 @@ def build_parser() -> argparse.ArgumentParser:
     "--seed", type=int, default=42,
     help="зерно ГПСЧ для воспроизводимости",
     )
+    parser.add_argument("--export", metavar="FILE", help="экспорт в CSV")
     return parser
 # ---------------------------------------------------------------------------
 # main
@@ -100,11 +101,22 @@ def main(argv: List[str] | None = None) -> int:
         # Понятное сообщение вместо «сырого» трейсбека
         print(f"Ошибка: {err}", file=sys.stderr)
         return 1
+    #экспорт в CSV
+    if args.export:
+        import csv
+        with open(args.export, "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["i", "value"])
+            for i, v in enumerate(data):
+                w.writerow([i, v])
+        print(f"Экспортировано в {args.export}")
+
         print_header(args.kind, args.n)
         print_stats(stats)
         print_series("Исходный ряд", data)
         print_series(f"SMA (window={args.window})", sma)
         print_series(f"EMA (alpha={args.alpha})", ema)
+
     if cma is not None:
         print_series(f"Центрированное MA (window={args.window})", cma)
         print_footer()
