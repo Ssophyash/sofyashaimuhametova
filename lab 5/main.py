@@ -28,6 +28,9 @@ from num_series import (
     simple_moving_average,centered_moving_average,exponential_moving_average,
     save_series_json, load_series_auto,
     benchmark_moving_average,
+    v4_series,
+    simple_moving_average_deque,
+    moving_median,
 )
 
 # ----------------------------------------------------------------
@@ -109,6 +112,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--window", type=int, default=3, help="размер окна для скользящей средней")
     parser.add_argument("--alpha", type=float, default=0.3, help="коэффициент сглаживания для EMA")
     parser.add_argument("--benchmark",action="store_true",help="замерить время выполнения SMA для list и deque",)
+    parser.add_argument("--variant4",action="store_true",help="запустить вариант 4",)
     return parser
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -119,6 +123,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     except ValueError as err:
         print(f"Ошибка получения ряда: {err}", file=sys.stderr)
         return 1
+    if args.variant4:
+        data = v4_series(n=args.n, seed=args.seed)
+        source = "Вариант 4"
+
     # --- 2. Сохраняем (до анализа) ---
     if args.save:
         meta = {"source": source}
@@ -142,6 +150,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     try:
         stats = summarize(data)
         sma = simple_moving_average(data, args.window)
+        sma_deque = simple_moving_average_deque (data, args.window)
+        med = moving_median (data, args.window)
         ema = exponential_moving_average(data, args.alpha)
         cma = (
             centered_moving_average(data, args.window)
@@ -156,6 +166,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     print_stats(stats)
     print_series("Исходный ряд", data)
     print_series(f"SMA (window={args.window})", sma)
+    print_series(f"SMA (deque, window={args.window})", sma_deque)
+    print_series(f"Скользящая медиана (window={args.window})", med)
     print_series(f"EMA (alpha={args.alpha})", ema)
     if cma is not None:
         print_series(f"Центрированное MA (window={args.window})", cma)

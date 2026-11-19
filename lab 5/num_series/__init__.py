@@ -14,7 +14,7 @@
 >>> stats = summarize(data)
 >>> sma = simple_moving_average(data, 3)
 """
-from .generator import random_series, sine_series, trend_series
+from .generator import random_series, sine_series, trend_series, v4_series
 from .stats import mean, median, spread, summarize
 from .moving_average import (
     simple_moving_average,
@@ -22,6 +22,7 @@ from .moving_average import (
     centered_moving_average,
     exponential_moving_average,
     benchmark_moving_average,
+    moving_median
 )
 
 from .io_json import save_series_json, load_series_json

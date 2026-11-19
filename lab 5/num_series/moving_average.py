@@ -94,3 +94,18 @@ def benchmark_moving_average(data: Sequence[float], window: int, repeats: int = 
     t_deque = (time.perf_counter() - t0) / repeats
     
     return {"list": t_list, "deque": t_deque}
+
+#функция скользящей медианы
+def moving_median(data: list, window: int) -> list:
+    check_window(window, len(data))#проверяем окно
+    result = []
+    for i in range(len(data) - window + 1):    # идем по ряду окнами
+        current_window = sorted(data[i : i + window]) #сортируем часть ряда
+        k = len(current_window) // 2 #середина
+        
+        if len(current_window) % 2!=0: #если окно нечетное
+            result.append(float(current_window[k])) #берем центральный элемент
+        else:
+            result.append((current_window[k - 1] + current_window[k]) / 2.0) #берем среднее 2ух центральных элементов
+            
+    return result

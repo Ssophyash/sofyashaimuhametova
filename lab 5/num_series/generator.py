@@ -55,3 +55,12 @@ def trend_series(n: int,
     start + step * i + (rng.uniform(-noise, noise) if noise else 0.0)
     for i in range(n)
  ]
+def v4_series(n:int=1000,
+              seed:int=None)->list:
+    _validate_n(n)
+    rng=random.Random(seed)
+    result=[]
+    for _ in range (n):
+        val=rng.gauss(100,15) #берем число из нормального распределения (где среднее 100, а отклонение 15)
+        result.append(float(round(val)))
+    return result
